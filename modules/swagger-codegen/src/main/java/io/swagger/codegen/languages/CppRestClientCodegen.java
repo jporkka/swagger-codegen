@@ -210,6 +210,11 @@ public class CppRestClientCodegen extends AbstractCppCodegen {
 
     @Override
     public CodegenModel fromModel(String name, Model model, Map<String, Model> allDefinitions) {
+        String y = sanitizeName(name);
+        if (y.compareTo(name) != 0)
+        {
+            name = y; // Model identifiers
+        }
         CodegenModel codegenModel = super.fromModel(name, model, allDefinitions);
 
         Set<String> oldImports = codegenModel.imports;
@@ -267,12 +272,25 @@ public class CppRestClientCodegen extends AbstractCppCodegen {
 
     @Override
     public String toModelFilename(String name) {
-        return initialCaps(name);
+
+        String x = initialCaps(name);
+        String y = sanitizeName(x);
+        if (x.compareTo(y) != 0)
+        {
+            x = y; // Model filenames
+        }
+        return x;
     }
 
     @Override
     public String toApiFilename(String name) {
-        return initialCaps(name) + "Api";
+        String x = initialCaps(name) + "Api";
+        String y = sanitizeName(x);
+        if (x.compareTo(y) != 0)
+        {
+            x = y; // Doesn't ever run?
+        }
+        return x;
     }
 
     /**
@@ -309,7 +327,7 @@ public class CppRestClientCodegen extends AbstractCppCodegen {
     @Override
     public String toDefaultValue(Property p) {
         if (p instanceof StringProperty) {
-            return "utility::conversions::to_string_t(\"\")";
+            return "utility::conversions::to_string_t(L\"\")";
         } else if (p instanceof BooleanProperty) {
             return "false";
         } else if (p instanceof DateProperty) {
@@ -385,13 +403,21 @@ public class CppRestClientCodegen extends AbstractCppCodegen {
                 || languageSpecificPrimitives.contains(type)) {
             return type;
         } else {
-            return Character.toUpperCase(type.charAt(0)) + type.substring(1);
+            String x = Character.toUpperCase(type.charAt(0)) + type.substring(1);
+            String y = sanitizeName(x);
+            return y;
         }
     }
 
     @Override
     public String toApiName(String type) {
-        return Character.toUpperCase(type.charAt(0)) + type.substring(1) + "Api";
+        String x = Character.toUpperCase(type.charAt(0)) + type.substring(1) + "Api";
+        String y = sanitizeName(x);
+        if (x.compareTo(y) != 0)
+        {
+            x = y;
+        }
+        return y;
     }
 
     @Override
@@ -402,6 +428,7 @@ public class CppRestClientCodegen extends AbstractCppCodegen {
 
     @Override
     public String escapeUnsafeCharacters(String input) {
+
         return input.replace("*/", "*_/").replace("/*", "/_*");
     }
 
